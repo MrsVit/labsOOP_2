@@ -4,7 +4,6 @@
 #include <cctype>
 
 Octal::Octal() : digits(1, 0) {}
-
 Octal::Octal(const size_t n, unsigned char t) {
     if (t > 7) {
         throw invalid_argument("All digits must be in range 0-7");
@@ -12,7 +11,6 @@ Octal::Octal(const size_t n, unsigned char t) {
     digits.resize(n, t);
     normal();
 }
-
 Octal::Octal(const initializer_list<unsigned char>& list) {
     for (auto digit : list) {
         if (digit >7) {
@@ -22,7 +20,6 @@ Octal::Octal(const initializer_list<unsigned char>& list) {
     digits.assign(list.begin(), list.end());
     normal();
 }
-
 Octal::Octal(const string&  s) {
     if ( s.empty()) {
         digits = {0};
@@ -39,9 +36,8 @@ Octal::Octal(const string&  s) {
     }
     normal();
 }
-//copy
-Octal::Octal(const Octal& other) : digits(other.digits) {}
 
+Octal::Octal(const Octal& other) : digits(other.digits) {}
 Octal::~Octal() noexcept = default;
 
 void Octal::normal() {
@@ -54,7 +50,6 @@ void Octal::normal() {
         digits = {0};
     }
 }
-
 unsigned int Octal::toDecimal() const {
     unsigned int res = 0;
     unsigned int base = 1;

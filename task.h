@@ -30,5 +30,5 @@ class Octal{
 
     private:
         vector<unsigned char> digits;
-        void normal(); //удаление ведущих нулей
+        void normal(); 
 };
