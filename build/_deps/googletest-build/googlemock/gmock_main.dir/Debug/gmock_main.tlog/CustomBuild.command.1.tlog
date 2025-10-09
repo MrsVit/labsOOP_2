@@ -1,0 +1,10 @@
+^C:\USERS\ANGELOK\DESKTOP\OOP_LAB2\LABSOOP_2\BUILD\_DEPS\GOOGLETEST-SRC\GOOGLEMOCK\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Angelok/Desktop/OOP_lab2/labsOOP_2 -BC:/Users/Angelok/Desktop/OOP_lab2/labsOOP_2/build --check-stamp-file C:/Users/Angelok/Desktop/OOP_lab2/labsOOP_2/build/_deps/googletest-build/googlemock/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
