@@ -281,7 +281,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C:\Users\Angelok\Desktop\OOP_lab2\labsOOP_2\task.cpp" />
-    <ClInclude Include="C:\Users\Angelok\Desktop\OOP_lab2\labsOOP_2\task.h" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

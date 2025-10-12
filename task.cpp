@@ -1,157 +1,183 @@
-#include "task.h"
-#include <stdexcept>
-#include <algorithm>
-#include <cctype>
+# include "task.h"
 
-Octal::Octal() : digits(1, 0) {}
+Octal::Octal() : digits(nullptr), o_size(0) {}
 Octal::Octal(const size_t n, unsigned char t) {
+    if (n == 0) {
+        throw invalid_argument("Size cannot be zero");
+    }
     if (t > 7) {
-        throw invalid_argument("All digits must be in range 0-7");
+        throw invalid_argument("Octal digit must be 0-7");
     }
-    digits.resize(n, t);
+    o_size = n;
+    digits = new unsigned char[o_size];
+    for (size_t i = 0; i < o_size; ++i) {
+        digits[i] = t;
+    }
     normal();
 }
+
 Octal::Octal(const initializer_list<unsigned char>& list) {
-    for (auto digit : list) {
-        if (digit >7) {
-        throw invalid_argument("All digits must be in range 0-7");
+    if (list.size()==0) {
+        throw invalid_argument("Initializer list is empty");
+    }
+    o_size = list.size();
+    digits = new unsigned char[o_size];
+    size_t i = 0;
+    for (unsigned char d : list) {
+        if (d > 7) {
+            delete[] digits;
+            throw invalid_argument("Digit in initializer_list must be 0-7");
         }
-    }
-    digits.assign(list.begin(), list.end());
-    normal();
-}
-Octal::Octal(const string&  s) {
-    if ( s.empty()) {
-        digits = {0};
-        return;
-    }
-    for (char c :  s) {
-        if (!isdigit(c) || c > '7') {
-        throw invalid_argument("All digits must be in range 0-7");
-        }
-    }
-    digits.reserve( s.size());
-    for (char c :  s) {
-        digits.push_back(static_cast<unsigned char>(c - '0'));
-    }
-    normal();
-}
-
-Octal::Octal(const Octal& other) : digits(other.digits) {}
-Octal::~Octal() noexcept = default;
-
-void Octal::normal() {
-    auto  i= digits.begin();
-    while ( i!= digits.end() && * i== 0 && distance(i, digits.end()) > 1) {
+        digits[o_size - i - 1] = d; //разворачиваем
         ++i;
     }
-    digits.erase(digits.begin(), i);
-    if (digits.empty()) {
-        digits = {0};
-    }
-}
-unsigned int Octal::toDecimal() const {
-    unsigned int res = 0;
-    unsigned int base = 1;
-    for (auto i = digits.rbegin(); i != digits.rend(); ++i) {
-        res += (*i) * base;
-        base *= 8;
-    }
-    return res;
+    normal();
 }
 
-string Octal::toString() const {
-    string result;
-    for (unsigned char digit : digits) {
-        result += static_cast<char>('0' + digit);
+Octal::Octal(const string& octStr) {
+    if (octStr.empty()) {
+        throw invalid_argument("Empty string");
     }
-    return result;
+    o_size = octStr.size();
+    digits = new unsigned char[o_size];
+
+    for (size_t i = 0; i < o_size; ++i) {
+        char c = octStr[o_size - 1 - i]; 
+        if (c < '0' || c > '7') {
+            delete[] digits;
+            throw invalid_argument("Invalid octal character");
+        }
+        digits[i] = c - '0';
+    }
+    normal();
 }
 
-//cложение b вычитание? что вeрнут новое число-объект
+Octal::Octal(const Octal& other) : o_size(other.o_size) {
+    digits = new unsigned char[o_size];
+    for (size_t i = 0; i < o_size; ++i) {
+        digits[i] = other.digits[i];
+    }
+}
+
+Octal::~Octal() noexcept {
+    delete[] digits;
+}
+
+void Octal::normal() {
+    size_t new_size = o_size;
+    while (new_size > 1 && digits[new_size - 1] == 0) {
+        --new_size;
+    }
+
+    if (new_size != o_size) {
+        unsigned char* new_digits = new unsigned char[new_size];
+        for (size_t i = 0; i < new_size; ++i) {
+            new_digits[i] = digits[i];
+        }
+        delete[] digits;
+        digits = new_digits;
+        o_size = new_size;
+    }
+}
+
 Octal Octal::add(const Octal& other) const {
+    size_t max_size = (o_size > other.o_size) ? o_size : other.o_size;
     Octal result;
-    result.digits.clear();
-    auto  a = digits.rbegin();
-    auto  b = other.digits.rbegin();
-    unsigned char  c = 0;
+    delete[] result.digits;
+    result.digits = new unsigned char[max_size + 1];
+    result.o_size = max_size + 1;
 
-    while ( a != digits.rend() ||  b != other.digits.rend() ||  c) {
-        unsigned char sum =  c;
-        if ( a != digits.rend()) {
-            sum += * a++;
-        }
-        if ( b != other.digits.rend()) {
-            sum += * b++;
-        }
-         c = sum / 8;
-        result.digits.push_back(sum % 8);
+    unsigned char carry = 0;
+    for (size_t i = 0; i < max_size; ++i) {
+        unsigned short sum = carry;
+        if (i < o_size) sum += digits[i];
+        if (i < other.o_size) sum += other.digits[i];
+        result.digits[i] = sum % 8;
+        carry = sum / 8;
     }
-    reverse(result.digits.begin(), result.digits.end());
+    result.digits[max_size] = carry;
+
     result.normal();
     return result;
 }
 
 Octal Octal::subtract(const Octal& other) const {
-    if (this->less(other)) {
-        throw std::invalid_argument("Cannot subtract larger number from smaller (unsigned)");
+    if (less(other)) {
+        throw underflow_error("It'ы negative");
+    }
+    unsigned char* temp = new unsigned char[o_size];
+    unsigned char borrow = 0;
+
+    for (size_t i = 0; i < o_size; ++i) {
+        unsigned char d1 = digits[i];
+        unsigned char d2 = (i < other.o_size) ? other.digits[i] : 0;
+
+        if (d1 < d2 + borrow) {
+            temp[i] = d1 + 8 - d2 - borrow;
+            borrow = 1;
+        } else {
+            temp[i] = d1 - d2 - borrow;
+            borrow = 0;
+        }
     }
 
     Octal result;
-    result.digits.clear();
-
-    auto  a = digits.rbegin();
-    auto  b = other.digits.rbegin();
-    int  k = 0;
-
-    while ( a != digits.rend()) {
-        int  d = * a++ -  k;
-        if ( b != other.digits.rend()) {
-             d -= * b++;
-        }
-        if ( d < 0) {
-             d += 8;
-             k = 1;
-        } else {
-             k = 0;
-        }
-        result.digits.push_back(static_cast<unsigned char>( d));
-    }
-    reverse(result.digits.begin(), result.digits.end());
+    delete[] result.digits;
+    result.digits = temp;
+    result.o_size = o_size;
     result.normal();
     return result;
 }
 
 bool Octal::equals(const Octal& other) const {
-    if (digits.size() != other.digits.size()) {
-        return false;
+    if (o_size != other.o_size) return false;
+    for (size_t i = 0; i < o_size; ++i) {
+        if (digits[i] != other.digits[i]) return false;
     }
-    return equal(digits.begin(), digits.end(), other.digits.begin());
+    return true;
 }
 
 bool Octal::less(const Octal& other) const {
-    if (digits.size() != other.digits.size()) {
-        return digits.size() < other.digits.size();
+    if (o_size != other.o_size) {
+        return o_size < other.o_size;
     }
-    return lexicographical_compare(digits.begin(), digits.end(),
-                                        other.digits.begin(), other.digits.end());
-}
+    for (size_t i = o_size; i > 0; --i) {
+        size_t idx = i - 1;
+        if (digits[idx] < other.digits[idx]) return true;
+        if (digits[idx] > other.digits[idx]) return false;
+    }
+    return false;}
 
 bool Octal::greater(const Octal& other) const {
-    if (digits.size() != other.digits.size()) {
-        return digits.size() > other.digits.size();
+    if (o_size != other.o_size) {
+        return o_size > other.o_size;
     }
-    return lexicographical_compare(other.digits.begin(), other.digits.end(),
-                                        digits.begin(), digits.end());
+    for (size_t i = o_size; i > 0; --i) {
+        size_t idx = i - 1;
+        if (digits[idx] > other.digits[idx]) return true;
+        if (digits[idx] < other.digits[idx]) return false;
+    }
+    return false; 
 }
 
-//сложенни и вычитание, которые изменят текущий объект
-Octal& Octal::Add(const Octal& other) {
-    *this = this->add(other);
-    return *this;
+unsigned int Octal::toDecimal() const {
+    unsigned int dec = 0;
+    unsigned int power = 1;
+    for (size_t i = 0; i < o_size; ++i) {
+        dec += digits[i] * power;
+        if (i < o_size - 1){
+            power *= 8; 
+        }
+    }
+    return dec;
 }
 
-Octal& Octal::Sub(const Octal& other) {
-    *this = this->subtract(other);
-    return *this;
+string Octal::toString() const {
+    if (o_size == 0) return "0";
+    string s;
+    s.reserve(o_size);
+    for (size_t i = 0; i < o_size; ++i) {
+        s.push_back('0' + digits[o_size - 1 - i]);
+    }
+    return s;
 }

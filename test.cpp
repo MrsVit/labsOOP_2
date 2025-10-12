@@ -33,7 +33,7 @@ TEST(Subtraction, SimpleSub) {
 }
 
 TEST(Subtraction, NoNegatives) {
-    EXPECT_THROW(Octal("5").subtract(Octal("10")), std::invalid_argument);
+    EXPECT_THROW(Octal("5").subtract(Octal("10")), std::underflow_error);
 }
 
 TEST(Comparison, EqualNumbers) {
@@ -56,24 +56,6 @@ TEST(Normalization, LeadingZerosGone) {
     Octal a("00042");
     EXPECT_EQ(a.toString(), "42");
 }
-
-TEST(Normalization, EmptyStringIsZero) {
-    Octal z("");
-    EXPECT_EQ(z.toString(), "0");
-}
-
-TEST(InPlace, AddChangesSelf) {
-    Octal a("5");
-    a.Add(Octal("3"));
-    EXPECT_EQ(a.toString(), "10");
-}
-
-TEST(InPlace, SubChangesSelf) {
-    Octal a("20");
-    a.Sub(Octal("5"));
-    EXPECT_EQ(a.toString(), "13"); // 16 - 5 = 11 (dec) = 13 (oct)
-}
-
 
 TEST(Subtraction, ZeroMinusZero) {
     Octal z = Octal("0").subtract(Octal("0"));

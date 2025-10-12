@@ -6,17 +6,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\Angelok\Desktop\OOP_lab2\labsOOP_2\task.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="C:\Users\Angelok\Desktop\OOP_lab2\labsOOP_2\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{094DDB57-92DF-3DCE-A1F3-8DABC8777591}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{347CEC08-7F80-3148-9104-39C164DB4041}</UniqueIdentifier>
     </Filter>

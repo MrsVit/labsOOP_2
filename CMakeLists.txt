@@ -16,17 +16,18 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 # Создание библиотеки с именем  lab2_v3_lib
-add_library( lab2_v3_lib task.cpp task.h)
+add_library(lab2_v3_lib task.cpp)
 
 # Указываем, что заголовки находятся в текущей директории
 target_include_directories(${CMAKE_PROJECT_NAME}_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Исполняемый файл проекта
-add_executable(${CMAKE_PROJECT_NAME}_exe task.cpp)
+add_executable(${CMAKE_PROJECT_NAME}_exe main.cpp)
 target_link_libraries(${CMAKE_PROJECT_NAME}_exe PRIVATE ${CMAKE_PROJECT_NAME}_lib)
 
 # Добавление тестов
 enable_testing()
+link_directories()
 
 add_executable(tests test.cpp)
 target_link_libraries(tests PRIVATE ${CMAKE_PROJECT_NAME}_lib gtest_main)

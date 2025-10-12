@@ -1,7 +1,7 @@
 #pragma once
 # include <string>
 # include <iostream>
-# include <vector>
+# include <algorithm>
 
 using namespace std; 
 
@@ -17,7 +17,7 @@ class Octal{
         //геттеры
         unsigned int toDecimal() const;
         string toString() const;
-        size_t size() const { return digits.size(); }
+        size_t size() const { return o_size; }
 
         Octal add(const Octal& other) const;
         Octal subtract(const Octal& other) const;
@@ -25,10 +25,8 @@ class Octal{
         bool less(const Octal& other) const;
         bool greater(const Octal& other) const;
 
-        Octal& Add(const Octal& other);
-        Octal& Sub(const Octal& other);
-
     private:
-        vector<unsigned char> digits;
+        unsigned char * digits;
+        size_t o_size;
         void normal(); 
 };

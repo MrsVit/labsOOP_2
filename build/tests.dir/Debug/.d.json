@@ -175,7 +175,10 @@
             "c:\\users\\angelok\\desktop\\oop_lab2\\labsoop_2\\build\\_deps\\googletest-src\\googletest\\include\\gtest\\gtest-typed-test.h",
             "c:\\users\\angelok\\desktop\\oop_lab2\\labsoop_2\\build\\_deps\\googletest-src\\googletest\\include\\gtest\\gtest_pred_impl.h",
             "c:\\users\\angelok\\desktop\\oop_lab2\\labsoop_2\\build\\_deps\\googletest-src\\googletest\\include\\gtest\\gtest_prod.h",
-            "c:\\users\\angelok\\desktop\\oop_lab2\\labsoop_2\\task.h"
+            "c:\\users\\angelok\\desktop\\oop_lab2\\labsoop_2\\task.h",
+            "c:\\program files (x86)\\microsoft visual studio\\2022\\buildtools\\vc\\tools\\msvc\\14.44.35207\\include\\algorithm",
+            "c:\\program files (x86)\\microsoft visual studio\\2022\\buildtools\\vc\\tools\\msvc\\14.44.35207\\include\\__msvc_heap_algorithms.hpp",
+            "c:\\program files (x86)\\microsoft visual studio\\2022\\buildtools\\vc\\tools\\msvc\\14.44.35207\\include\\__msvc_minmax.hpp"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []

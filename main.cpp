@@ -1,105 +1,86 @@
 #include "task.h"
 #include <iostream>
 #include <string>
-#include <exception>
+#include <cctype>
+
 using namespace std;
 
+bool isValidOctal(const string& s) {
+    if (s.empty()) return false;
+    for (char c : s) {
+        if (c < '0' || c > '7') return false;
+    }
+    return true;
+}
+
 int main() {
-    cout << "=== Octal Calculator ===" << endl;
-    cout << "Available commands:" << endl;
-    cout << "  create <name> <octal>   -- make a new octal number (only 0-7)" << endl;
-    cout << "  print <name>            -- show number in octal & decimal" << endl;
-    cout << "  add <A> <B>             -- add two numbers" << endl;
-    cout << "  sub <A> <B>             -- subtract B from A" << endl;
-    cout << "  cmp <A> <B>             -- compare A and B" << endl;
-    cout << "  quit                    -- exit" << endl;
-    cout << "----------------------------------------" << endl;
+    cout<<"=====Demo methods of initialization===="<<endl;
+    Octal zero;
+    cout << "1. Default constructor: " << zero.toString() << endl;
+    Octal repeated(4, 5);
+    cout << "2. Repeated digit (4, '5'): " << repeated.toString() << endl;
+    Octal from_list({7, 2, 1}); 
+    cout << "3. From initializer_list {7,2,1}: " << from_list.toString() << endl;
+    Octal from_str("642");
+    cout << "4. From string \"642\": " << from_str.toString() << endl;
 
-    Octal A, B;
-    bool A_ready = false, B_ready = false;
-    string command;
+    cout << "\n=== Main part ===" << endl;
+    string a;
+    cout << "Enter first octal number A (digits 0-7): ";
+    cin >> a;
 
-    while (cin >> command) {
-        if (command == "quit") {
-            break;
-        }
-        else if (command == "create") {
-            string var_name, oct_str;
-            cin >> var_name >> oct_str;
-            try {
-                if (var_name == "A") {
-                    A = Octal(oct_str);
-                    A_ready = true;
-                    cout << "Created A = " << A.toString() << endl;
-                }
-                else if (var_name == "B") {
-                    B = Octal(oct_str);
-                    B_ready = true;
-                    cout << "Created B = " << B.toString() << endl;
-                }
-                else {
-                    cout << "Use 'A' or 'B' as name, please." << endl;
-                }
-            }
-            catch (const exception& ex) {
-                cout << "Oops: " << ex.what() << endl;
-            }
-        }
-        else if (command == "print") {
-            string name;
-            cin >> name;
-            if (name == "A" && A_ready) {
-                cout << "A is " << A.toString() << " (oct) = " << A.toDecimal() << " (dec)" << endl;
-            }
-            else if (name == "B" && B_ready) {
-                cout << "B is " << B.toString() << " (oct) = " << B.toDecimal() << " (dec)" << endl;
-            }
-            else {
-                cout << "Number " << name << " not found. Create it first." << endl;
-            }
-        }
-        else if (command == "add") {
-            if (!A_ready || !B_ready) {
-                cout << "Both A and B must exist." << endl;
-                continue;
-            }
-            Octal sum = A.add(B);
-            cout << A.toString() << " + " << B.toString() << " = " << sum.toString()
-                 << " (dec: " << sum.toDecimal() << ")" << endl;
-        }
-        else if (command == "sub") {
-            if (!A_ready || !B_ready) {
-                cout << "Need both numbers to subtract." << endl;
-                continue;
-            }
-            try {
-                Octal diff = A.subtract(B);
-                cout << A.toString() << " - " << B.toString() << " = " << diff.toString()
-                     << " (dec: " << diff.toDecimal() << ")" << endl;
-            }
-            catch (const exception& ex) {
-                cout << "Error during subtraction: " << ex.what() << endl;
-            }
-        }
-        else if (command == "cmp") {
-            if (!A_ready || !B_ready) {
-                cout << "Can't compare — missing numbers." << endl;
-                continue;
-            }
-            if (A.equals(B)) {
-                cout << A.toString() << " equals " << B.toString() << endl;
-            }
-            else if (A.less(B)) {
-                cout << A.toString() << " is less than " << B.toString() << endl;
-            }
-            else {
-                cout << A.toString() << " is greater than " << B.toString() << endl;
-            }
-        }
-        else {
-            cout << "Don't know that command." << endl;
-        }
+    if (!isValidOctal(a)) {
+        cerr << "Only 0-7" << endl;
+        return 1;
     }
 
+    Octal A(a);
+    cout << "A = " << A.toString() << " (decimal: " << A.toDecimal() << ")" << endl;
+
+    char choice;
+    cout << "\nHow to set B?\n"
+         << "  1. Enter manually\n"
+         << "  2. Copy from A\n"
+         << "Choose (1 or 2): ";
+    cin >> choice;
+
+    Octal B;
+    if (choice == '2') {
+        B = A; 
+        cout << "B was set by copying A." << endl;
+    } else if (choice == '1') {
+        string inputB;
+        cout << "Enter second octal number B: ";
+        cin >> inputB;
+        if (!isValidOctal(inputB)) {
+            cerr << "Only 0-7" << endl;
+            return 1;
+        }
+        B = Octal(inputB);
+        cout << "B = " << B.toString() << " (decimal: " << B.toDecimal() << ")" << endl;
+    } else {
+        cerr << "Invalid choice. Exiting." << endl;
+        return 1;
+    }
+
+    try {
+        Octal sum = A.add(B);
+        cout << "A + B = " << sum.toString() << " (dec: " << sum.toDecimal() << ")" << endl;
+    } catch (const exception& e) {
+        cerr << "Addition error: " << e.what() << endl;
+    }
+
+    try {
+        Octal diff = A.subtract(B);
+        cout << "A - B = " << diff.toString() << " (dec: " << diff.toDecimal() << ")" << endl;
+    } catch (const exception& e) {
+        cout << "A - B: " << e.what() << " (cannot be negative)" << endl;
+    }
+
+    cout << "A ?= B? " << (A.equals(B) ? "yes" : "no") << endl;
+    cout << "A ?< B?  " << (A.less(B) ? "yes" : "no") << endl;
+    cout << "A ?> B?  " << (A.greater(B) ? "yes" : "no") << endl;
+
+    cout << "\nProgram completed." << endl;
     return 0;
 }
