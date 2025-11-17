@@ -1,0 +1,2 @@
+C:\TDM-GCC-64\bin\ar.exe qc liblab2_v3_lib.a CMakeFiles/lab2_v3_lib.dir/task.cpp.obj
+C:\TDM-GCC-64\bin\ranlib.exe liblab2_v3_lib.a
